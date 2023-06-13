@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="main.js"></script>
+</head>
+<body>
+
+    <table border="3">
+        <input type="hidden" id="userid">
+        <tr><td>Name :- </td>
+            <td><input type="text" id="name" /></td>
+        </tr>
+        <tr>
+            <td>Email :- </td>
+            <td><input type="email" id="email" /></td>
+        </tr>
+        <tr>
+            <td>Password :- </td>
+            <td><input type="password" id="password" /></td>
+        </tr>
+        <tr>
+            <td>City :-</td>
+            <td><input type="text" id="city" /></td>
+        </tr>
+        <tr>
+            <td>Age :-</td>
+            <td><input type="digit" id="age" /></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type="button" id="save" onclick="save()" value="submit"/>
+                <input type="button" id="edit" onclick="edit()" value="Edit"/>
+
+            </td>
+        </tr>
+        <tr>
+            <td><button onclick="clearLocalStorage()">Clear Local Storage</button></td>
+
+        </tr>
+    </table><br><br>
+
+    <table border="5">
+        <tr>
+            <td>Id</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Password</td>
+            <td>city</td>
+            <td>Age</td>
+        </tr>
+
+        <tbody id="record">
+
+        </tbody>
+
+    </table>
+    
+</body>
+</html>
