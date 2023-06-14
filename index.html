@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Working with DOM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<style>
+    button{
+        background-color: blue;
+        color: white;
+        font-size: 18px;
+        padding: 13px;
+        border: none;
+        border-radius: 30px;
+        
+    }
+    table button{
+        background-color: blue;
+        color: white;
+        font-size: 15px;
+        padding: 7px;
+        border: none;
+        border-radius: 10px;
+        margin-bottom: 8PX;
+
+    }
+</style>
+<body>
+    
+        <center>
+            <button id="fetch">Fetch Data</button>
+            <button id="remove-button">Remove Data</button>
+        </center>
+    
+    
+    <table id="data" border="5" style="margin-top: 20px;"></table>
+    <script type="text/javascript">
+    
+    let fetchinfo = async () => {
+        let response = await fetch("https://jsonplaceholder.typicode.com/posts/1/comments");
+        let data = await response.json();
+        localStorage.setItem('fetchinfo', JSON.stringify(data));
+        return data;
+    };
+
+    let getData = () => JSON.parse(localStorage.getItem('fetchinfo'));
+
+    let displayData = () => {
+        let show = getData();    
+        let container = document.getElementById('data');
+        container.innerHTML = '';
+
+        
+        let addButton = document.createElement('button');
+        addButton.textContent = 'Add';
+        addButton.addEventListener('click', () => {
+            addData();
+        });
+        container.appendChild(addButton);
+
+        if (Array.isArray(show) && show.length > 0) {
+            let headers = [
+                { text: 'ID', property: 'id' },
+                { text: 'Name', property: 'name' },
+                { text: 'Email', property: 'email' },
+                { text: 'Body', property: 'body' }
+            ];
+
+            
+            const headerRow = document.createElement('tr');
+            headers.forEach(header => {
+                const headerCell = document.createElement('th');
+                headerCell.textContent = header.text;
+                headerCell.addEventListener('click', () => {
+                    sortData(header.property, 'asc');
+                });
+                headerRow.appendChild(headerCell);
+            });
+            container.appendChild(headerRow);
+
+            
+            const sortData = (property, sortOrder) => {
+                show.sort((a, b) => {
+                    if (a[property] < b[property]) {
+                        return sortOrder === 'asc' ? -1 : 1;
+                    }
+                    if (a[property] > b[property]) {
+                        return sortOrder === 'asc' ? 1 : -1;
+                    }
+                    return 0;
+                });
+                displayData();
+            };
+
+            
+            show.map(val => {
+                let row = document.createElement('tr');
+                
+                headers.forEach(header => {
+                  let cell = document.createElement('td');
+                  cell.textContent = val[header.property];
+                  row.appendChild(cell);
+                });
+                
+                let updateButton = createButton('fas fa-user-pen', () => {
+                  updateData(val);
+                });
+                row.appendChild(updateButton);
+            
+                let deleteButton = createButton('fas fa-trash', () => {
+                  deleteData(val);
+                });
+                row.appendChild(deleteButton);
+            
+                container.appendChild(row);
+            });
+
+        } else {
+            container.innerHTML = '<h1>Data removed</h1>';
+        }
+    };
+
+const updateData = (data) => {
+  const updateId = prompt('Enter updated id:', data.id);
+  if (updateId && /^\d+$/.test(updateId)) {
+    const updatedTitle = prompt('Enter New title:', data.name);
+    const updatedEmail = prompt('Enter New email:', data.email);
+    const updatedBody = prompt('Enter New body:', data.body);
+
+    if (updatedTitle && updatedEmail && updatedBody) {
+      const updatedData = { id: updateId, name: updatedTitle, email: updatedEmail, body: updatedBody };
+      const show = getData();
+      const index = show.findIndex(item => item.id === data.id);
+      if (index !== -1) {
+        show[index] = updatedData;
+        localStorage.setItem('fetchinfo', JSON.stringify(show));
+        displayData();
+      }
+    }
+  } else {
+    alert('Please enter a valid updated ID (numeric only).');
+  }
+};
+
+
+
+    let deleteData = (data) => {
+    let show = getData();
+    let index = show.findIndex(item => item.id === data.id);
+    if (index !== -1) {
+        show.splice(index, 1);
+        localStorage.setItem('fetchinfo', JSON.stringify(show));
+        displayData();
+    }
+};
+
+
+    
+
+    let addData = () => {
+    let newId = prompt('Enter ID:');
+    if (newId && /^\d+$/.test(newId)) {
+        let newData = {
+            id: newId,
+            name: prompt('Enter title:'),
+            email: prompt('Enter Email:'),
+            body: prompt('Enter Body:')
+        };
+        if (newData.name && newData.email && newData.body) {
+            let show = getData();
+            show.push(newData);
+            localStorage.setItem('fetchinfo', JSON.stringify(show));
+            displayData();
+        }
+    } else {
+        alert('Please enter a valid ID only numeric.');
+    }
+};
+
+
+    let createButton = (iconClass, clickHandler) => {
+        let button = document.createElement('button');
+        let icon = document.createElement('i');
+        icon.classList.add(...iconClass.split(' '));
+        button.appendChild(icon);
+        button.addEventListener('click', clickHandler);
+        return button;
+    };
+
+    let Fetch_Click = async () => {
+        await fetchinfo();
+        displayData();
+    };
+
+    let Remove_Click = () => {
+        localStorage.removeItem('fetch');
+        displayData();
+    };
+
+    document.getElementById('fetch').addEventListener('click', Fetch_Click);
+    document.getElementById('remove-button').addEventListener('click', Remove_Click);
+    
+    </script>
+</body>
+</html>
